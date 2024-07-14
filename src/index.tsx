@@ -7,7 +7,8 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { theme } from "~/theme";
-import { ErrorBoundary } from "react-error-boundary";
+
+import ErrorBoundary from "~/components/ErrorBoundary/ErrorBoundary";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,16 +21,11 @@ if (import.meta.env.DEV) {
   worker.start({ onUnhandledRequest: "bypass" });
 }
 
-// function logErrorToService(error: any, info: any) {
-//   // Use your preferred error logging service
-//   console.log("Caught an error:", error, info);
-// }
-
 const container = document.getElementById("app");
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(container!);
 root.render(
-  <ErrorBoundary fallback={<div>Something went wrong</div>}>
+  <ErrorBoundary>
     <React.StrictMode>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
