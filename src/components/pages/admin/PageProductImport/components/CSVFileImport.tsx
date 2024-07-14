@@ -2,6 +2,7 @@ import React from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import { useErrorBoundary } from "react-error-boundary";
 
 type CSVFileImportProps = {
   url: string;
@@ -10,6 +11,8 @@ type CSVFileImportProps = {
 
 export default function CSVFileImport({ url, title }: CSVFileImportProps) {
   const [file, setFile] = React.useState<File>();
+
+  const { showBoundary } = useErrorBoundary();
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -24,31 +27,36 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
   };
 
   const uploadFile = async () => {
-    console.log("uploadFile to", url);
+    // console.log("uploadFile to", url);
     if (!file) {
       alert("Please select a file");
       return;
     }
-    // Get the presigned URL
-    const response = await axios({
-      method: "GET",
-      url,
-      params: {
-        name: encodeURIComponent(file.name),
-      },
-      headers: {
-        Authorization: `Basic ${localStorage.getItem("authorization_token")}`,
-      },
-    });
-    console.log("File to upload: ", file.name);
-    console.log("Uploading to: ", response.data);
-    const result = await fetch(response.data.url, {
-      method: "PUT",
-      body: file,
-    });
-    console.log("Result: ", result);
-    setFile(undefined);
+
+    try {
+      const response = await axios({
+        method: "GET",
+        url,
+        params: {
+          name: encodeURIComponent(file.name),
+        },
+        headers: {
+          Authorization: `Basic ${localStorage.getItem("authorization_token")}`,
+        },
+      });
+      // console.log("File to upload: ", file.name);
+      // console.log("Uploading to: ", response.data);
+      const result = await fetch(response.data.url, {
+        method: "PUT",
+        body: file,
+      });
+      // console.log("Result: ", result);
+      setFile(undefined);
+    } catch (error) {
+      showBoundary((error as Error).message);
+    }
   };
+
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
