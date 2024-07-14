@@ -1,8 +1,7 @@
 import React from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import axios from "axios";
-import { useErrorBoundary } from "react-error-boundary";
+import axios, { AxiosError } from "axios";
 
 type CSVFileImportProps = {
   url: string;
@@ -12,8 +11,9 @@ type CSVFileImportProps = {
 export default function CSVFileImport({ url, title }: CSVFileImportProps) {
   const [file, setFile] = React.useState<File>();
 
-  const { showBoundary } = useErrorBoundary();
+  const [error, setError] = React.useState<AxiosError | null>(null);
 
+  // const { showBoundary } = useErrorBoundary();
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
@@ -27,7 +27,7 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
   };
 
   const uploadFile = async () => {
-    // console.log("uploadFile to", url);
+    console.log("uploadFile to", url);
     if (!file) {
       alert("Please select a file");
       return;
@@ -44,18 +44,22 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
           Authorization: `Basic ${localStorage.getItem("authorization_token")}`,
         },
       });
-      // console.log("File to upload: ", file.name);
-      // console.log("Uploading to: ", response.data);
+      console.log("File to upload: ", file.name);
+      console.log("Uploading to: ", response.data);
       const result = await fetch(response.data.url, {
         method: "PUT",
         body: file,
       });
-      // console.log("Result: ", result);
+      console.log("Result: ", result);
       setFile(undefined);
     } catch (error) {
-      showBoundary((error as Error).message);
+      setError(error as AxiosError);
     }
   };
+
+  if (error) {
+    throw new AxiosError(error.message);
+  }
 
   return (
     <Box>
