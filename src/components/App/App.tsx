@@ -14,7 +14,6 @@ import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <MainLayout>
-      <ToastContainer />
       <Routes>
         <Route path="/" element={<PageProducts />} />
         <Route path="cart" element={<PageCart />} />
