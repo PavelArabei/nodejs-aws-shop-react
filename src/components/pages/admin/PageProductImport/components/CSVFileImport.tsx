@@ -1,7 +1,7 @@
 import React from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 type CSVFileImportProps = {
   url: string;
@@ -10,7 +10,7 @@ type CSVFileImportProps = {
 
 export default function CSVFileImport({ url, title }: CSVFileImportProps) {
   const [file, setFile] = React.useState<File>();
-
+  // const { showBoundary } = useErrorBoundary();
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
@@ -29,12 +29,15 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
       alert("Please select a file");
       return;
     }
-    // Get the presigned URL
+
     const response = await axios({
       method: "GET",
       url,
       params: {
         name: encodeURIComponent(file.name),
+      },
+      headers: {
+        Authorization: `Basic ${localStorage.getItem("authorization_token")}`,
       },
     });
     console.log("File to upload: ", file.name);
@@ -46,6 +49,7 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
     console.log("Result: ", result);
     setFile(undefined);
   };
+
   return (
     <Box>
       <Typography variant="h6" gutterBottom>

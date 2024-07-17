@@ -7,6 +7,9 @@ import PageProductImport from "~/components/pages/admin/PageProductImport/PagePr
 import PageCart from "~/components/pages/PageCart/PageCart";
 import PageProducts from "~/components/pages/PageProducts/PageProducts";
 import { Typography } from "@mui/material";
+import { ToastContainer } from "react-toastify";
+import React from "react";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
